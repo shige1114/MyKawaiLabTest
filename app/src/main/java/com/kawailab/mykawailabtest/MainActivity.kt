@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.Manifest
 import android.app.AppOpsManager
 import android.app.usage.UsageStatsManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Process
@@ -23,8 +24,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if(checkReadStatsPermission()){
+            val usageManager=getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            monitor = GetAccountInfo(usageManager)
             monitor.test()
-            Log.i("","")
         }
     }
     private fun checkReadStatsPermission(): Boolean {
