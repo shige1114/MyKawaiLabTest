@@ -7,7 +7,6 @@ import android.app.AppOpsManager
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Process
 import android.util.Log
 import android.view.Menu
@@ -23,13 +22,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if(checkReadStatsPermission()){
+        if(checkReadStatsPermission("android.permission.PACKAGE_USAGE_STATS")){
             val usageManager=getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-            monitor = GetAccountInfo(usageManager)
+            monitor = GetAccountInfo.getInstance(usageManager)
             monitor.test()
         }
     }
-    private fun checkReadStatsPermission(): Boolean {
+
+    /*
+    * アプリの使用履歴取得の権限チェック
+    * 位置情報についての権限チェック
+    * 他の権限とは違う
+    * */
+    private fun checkReadStatsPermission(permissionRequestString:String): Boolean {
         // AppOpsManagerを取得
         val aom = getSystemService(APP_OPS_SERVICE) as AppOpsManager
         // GET_USAGE_STATSのステータスを取得
@@ -42,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             // AppOpsの状態がデフォルトなら通常のpermissionチェックを行う。
             // 普通のアプリならfalse
             checkPermission(
-                "android.permission.PACKAGE_USAGE_STATS",
+                permissionRequestString,
                 Process.myPid(),
                 Process.myUid()
             ) == PackageManager.PERMISSION_GRANTED
